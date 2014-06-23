@@ -1,15 +1,42 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+cmake_minimum_required(VERSION 2.8.3)
+project(asebaros)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+#Declare build dependencies
+find_package(catkin REQUIRED
+    COMPONENTS
+    message_generation
+    std_msgs
+    dashel
+    aseba )
 
-rosbuild_init()
+# This driver uses Boost threads
+find_package(Boost REQUIRED COMPONENTS thread)
+
+
+#Add message files
+add_message_files(DIRECTORY msg
+    FILES
+    AsebaAnonymousEvent.msg
+    AsebaEvent.msg)
+
+#Add service files
+add_service_files(DIRECTORY srv
+    FILES
+    GetEventId.srv
+    GetEventName.srv
+    GetNodeId.srv
+    GetNodeList.srv
+    GetNodeName.srv
+    GetVariableList.srv
+    GetVariable.srv
+    LoadScripts.srv
+    SetVariable.srv )
+
+#And now generate the messages
+generate_messages(DEPENDENCIES std_msgs)
+
+# Generate catkin/pkg-config import information
+catkin_package( CATKIN_DEPENDS message_runtime std_msgs )
 
 if (WIN32)
 	set(EXTRA_LIBS ${EXTRA_LIBS} winspool ws2_32 setupapi)
@@ -30,17 +57,23 @@ endif (WIN32)
 
 # libxml2
 find_package(LibXml2 REQUIRED)
-include_directories(${LIBXML2_INCLUDE_DIR})
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+include_directories(
+    ${catkin_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+    ${LIBXML2_INCLUDE_DIR})
 
-rosbuild_genmsg()
-rosbuild_gensrv()
+add_executable(asebaros src/asebaros.cpp)
+target_link_libraries(asebaros
+    asebacompiler
+    asebacore
+    ${catkin_LIBRARIES}
+    ${Boost_LIBRARIES}
+    ${LIBXML2_LIBRARIES}
+    ${EXTRA_LIBS})
 
-rosbuild_add_boost_directories()
-rosbuild_add_executable(asebaros src/asebaros.cpp)
-rosbuild_link_boost(asebaros thread)
-target_link_libraries(asebaros asebacompiler asebacore ${LIBXML2_LIBRARIES} ${EXTRA_LIBS})
+add_dependencies(asebaros ${PROJECT_NAME}_generate_messages_cpp)
+
+install(TARGETS asebaros
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION} )
+

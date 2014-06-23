@@ -1,0 +1,33 @@
+<package>
+  <name>asebaros</name>
+  <version>1.0.0</version>
+  <description>
+    Bridge to access an Aseba network from ROS.
+    For more information about Aseba, see: http://aseba.wikidot.com
+  </description>
+  <author>Stéphane Magnenat</author>
+  <author>Séverin Lemaignan</author>
+  <maintainer email="stephane.magnenat@mavt.ethz.ch">Stéphane Magnenat</maintainer>
+  <license>BSD</license>
+  <url>http://ros.org/wiki/asebaros</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>dashel</build_depend>
+  <build_depend>aseba</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>boost</build_depend>
+  <build_depend>libxml2</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>dashel</run_depend>
+  <run_depend>aseba</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>libxml2</run_depend>
+
+</package>
+
+
